@@ -1,11 +1,11 @@
 resource "docker_image" "nginx" {
-  name         = "nginx:latest"
+  name         = "nginx:1.27.4"
   keep_locally = false
 }
 
-resource "docker_container" "serveur_web" {
+resource "docker_container" "stacknova_recette" {
   image = docker_image.nginx.image_id
-  name  = "serveur-web-terraform"
+  name  = "stacknova-recette"
 
   ports {
     internal = 80
@@ -13,7 +13,12 @@ resource "docker_container" "serveur_web" {
   }
 
   labels {
-    label = "gere_par"
-    value = "terraform"
+    label = "env"
+    value = "recette"
+  }
+
+  labels {
+    label = "project"
+    value = "stacknova"
   }
 }
