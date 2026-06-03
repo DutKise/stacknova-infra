@@ -1,7 +1,10 @@
 ---
-- name: Configuration du serveur web
+- name: Configuration StackNova
   hosts: serveurs_web
   gather_facts: false
+
+  vars:
+    deployment_time: "{{ lookup('pipe', 'date +\"%Y-%m-%d %H:%M:%S\"') }}"
 
   tasks:
     - name: Vérifier que Nginx est bien démarré
@@ -12,10 +15,20 @@
       debug:
         var: nginx_test.stdout
 
-    - name: Déployer la page web personnalisée
-      raw: printf '<!DOCTYPE html>\n<html lang="fr">\n<head>\n<meta charset="UTF-8">\n<title>Deploye avec Terraform et Ansible</title>\n</head>\n<body>\n<h1>Bravo !</h1>\n<p>Infrastructure creee par Terraform.</p>\n<p>Configuration appliquee par Ansible.</p>\n</body>\n</html>\n' > /usr/share/nginx/html/index.html
+    - name: Déployer la page StackNova
+      raw: >
+        printf '<!DOCTYPE html>\n
+        <html>\n
+        <head><title>StackNova</title></head>\n
+        <body>\n
+        <h1>StackNova</h1>\n
+        <p>Environnement : recette</p>\n
+        <p>Date de déploiement : {{ deployment_time }}</p>\n
+        </body>\n
+        </html>\n'
+        > /usr/share/nginx/html/index.html
 
-    - name: Vérifier que Nginx répond
+    - name: Vérifier la page
       raw: curl -s http://localhost/
       register: resultat_curl
 
