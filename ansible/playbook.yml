@@ -1,0 +1,24 @@
+---
+- name: Configuration du serveur web
+  hosts: serveurs_web
+  gather_facts: false
+
+  tasks:
+    - name: Vérifier que Nginx est bien démarré
+      raw: nginx -t 2>&1
+      register: nginx_test
+
+    - name: Afficher le statut de Nginx
+      debug:
+        var: nginx_test.stdout
+
+    - name: Déployer la page web personnalisée
+      raw: printf '<!DOCTYPE html>\n<html lang="fr">\n<head>\n<meta charset="UTF-8">\n<title>Deploye avec Terraform et Ansible</title>\n</head>\n<body>\n<h1>Bravo !</h1>\n<p>Infrastructure creee par Terraform.</p>\n<p>Configuration appliquee par Ansible.</p>\n</body>\n</html>\n' > /usr/share/nginx/html/index.html
+
+    - name: Vérifier que Nginx répond
+      raw: curl -s http://localhost/
+      register: resultat_curl
+
+    - name: Afficher le résultat
+      debug:
+        var: resultat_curl.stdout
